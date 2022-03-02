@@ -1,0 +1,48 @@
+" font
+set guifont=Hack\ 12
+
+" appearance
+set termguicolors
+"let &t_8f = "\<Esc>[38:2:%lu:%lu:%lum"
+"let &t_8b = "\<Esc>[48:2:%lu:%lu:%lum"
+syntax enable
+set background=dark
+colorscheme base16-tomorrow-night
+
+" display tabs and trailing spaces
+set list
+set listchars=tab:>-,trail:-
+
+" line numbers
+set number
+set relativenumber
+
+" highlight line of the cursor
+set cursorline
+
+" add context around cursor
+set scrolloff=6
+
+" backup current file, deleted afterwards
+set nobackup
+set writebackup
+
+" indentation
+set tabstop=4
+set shiftwidth=4
+set expandtab
+set shiftround
+set autoindent
+set cinoptions=l1,(0,W1s
+
+" filetype detection
+filetype plugin indent on
+
+" reduce key code sequence timeout to speed up O new line after exiting insert mode
+set ttimeoutlen=50
+
+" mouse
+if !has('nvim')
+    set ttymouse=sgr
+endif
+set mouse=a

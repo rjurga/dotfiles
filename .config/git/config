@@ -1,0 +1,7 @@
+[user]
+	name = Radoslaw Jurga
+	email = radoslaw.jurga@gmail.com
+[init]
+	defaultBranch = master
+[diff]
+	tool = nvimdiff
