@@ -1,5 +1,5 @@
-" font
-set guifont=Hack\ 12
+" allow backspace
+set backspace=indent,eol,start
 
 " appearance
 set termguicolors
