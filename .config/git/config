@@ -5,3 +5,7 @@
 	defaultBranch = master
 [diff]
 	tool = nvimdiff
+[pull]
+	rebase = true
+[rebase]
+	autoStash = true
