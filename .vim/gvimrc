@@ -1,2 +1,6 @@
 set guifont=Hack:h12
 set lines=100 columns=120
+" Maximize initial window
+if has('win32')
+    au GUIEnter * simalt ~x
+endif
