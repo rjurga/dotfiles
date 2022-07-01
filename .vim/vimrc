@@ -1,65 +1,128 @@
-" allow backspace
+"
+" General
+"
+
+" Use Vim settings, rather than Vi settings
+set nocompatible
+
+" Disable Q command (Ex mode)
+nnoremap Q <Nop>
+
+" Disable bell sounds
+set belloff=all
+
+" Enable mouse
+if has('mouse')
+    set mouse=a
+endif
+
+" Set utf-8 encoding
+set encoding=utf-8
+
+"
+" Editing
+"
+
+" Allow backspacing over everything in insert mode
 set backspace=indent,eol,start
 
-" appearance
+" Map CTRL-backspace to delete word before the cursor
+inoremap <C-BS> <C-W>
+" Also map CTRL-H because CTRL-backspace doesn't work in terminals
+inoremap <C-H> <C-W>
+
+" Map CTRL-down/up to move by a paragraph in insert mode
+inoremap <C-Down> <C-O>}
+inoremap <C-Up> <C-O>{
+
+" Time out on key codes, making Esc take effect more quickly
+set ttimeout
+set ttimeoutlen=50
+
+"
+" Appearance
+"
+
 set termguicolors
-"let &t_8f = "\<Esc>[38:2:%lu:%lu:%lum"
-"let &t_8b = "\<Esc>[48:2:%lu:%lu:%lum"
-syntax enable
 set background=light
 colorscheme base16-tomorrow
 
-" display tabs and trailing spaces
-set list
-set listchars=tab:>-,trail:-
+" Show the cursor position all the time
+set ruler
 
-" line numbers
+" Display incomplete commands
+set showcmd
+
+" Display command-line completion matches in a status line
+set wildmenu
+
+" Show @@@ in the last column of the last line if it is truncated
+set display=lastline
+
+" Switch syntax highlighting on
+syntax on
+
+" Line numbers
 set number
 set relativenumber
 
-" folds
+" Folds
 set foldcolumn=1
 
-" highlight line of the cursor
+" Highlight line of the cursor
 set cursorline
 
-" highlight search results
-set hlsearch
-
-" add context around cursor
+" Add context around cursor
 set scrolloff=6
 
-" backup current file, deleted afterwards
-set nobackup
-set writebackup
+" Display tabs and trailing spaces
+set list
+set listchars=tab:>-,trail:-
 
-" indentation
+"
+" Indentation
+"
+
 set tabstop=4
 set shiftwidth=4
 set expandtab
 set shiftround
 set autoindent
-set cinoptions=l1,(0,W1s
 
-" filetype detection
+"
+" Files
+"
+
+" Backup current file, deleted afterwards
+set nobackup
+set writebackup
+
+"
+" Filetypes
+"
+
+" Detect filetype and load indent files
 filetype plugin indent on
 
-" reduce key code sequence timeout to speed up O new line after exiting insert mode
-set ttimeoutlen=50
+" Set indent style for C
+set cinoptions=:0,l1,g0,E-s,(0,W1s
 
-" disable bell sounds
-set belloff=all
+"
+" Searching
+"
 
-" mouse
-if !has('nvim')
-    set ttymouse=sgr
+" Do incremental searching when it's possible to timeout
+if has('reltime')
+  set incsearch
 endif
-set mouse=a
 
-" set utf-8 encoding
-set encoding=utf-8
+" Highlight search results
+set hlsearch
 
-" Windows specific options
+"
+" Windows specific
+"
+
 if has('win32')
     " Windows include dirs
     if isdirectory('C:/Program Files (x86)/Windows Kits/10/Include/10.0.19041.0/um')
@@ -73,3 +136,4 @@ if has('win32')
         set makeprg=\".\src\build.bat\"
     endif
 endif
+
