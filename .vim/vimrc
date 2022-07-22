@@ -47,6 +47,9 @@ set termguicolors
 set background=light
 colorscheme base16-tomorrow
 
+" Switch syntax highlighting on
+syntax enable
+
 " Show the cursor position all the time
 set ruler
 
@@ -59,15 +62,9 @@ set wildmenu
 " Show @@@ in the last column of the last line if it is truncated
 set display=lastline
 
-" Switch syntax highlighting on
-syntax on
-
 " Line numbers
 set number
 set relativenumber
-
-" Folds
-set foldcolumn=1
 
 " Highlight line of the cursor
 set cursorline
@@ -93,7 +90,7 @@ set autoindent
 " Files
 "
 
-" Backup current file, deleted afterwards
+" Backup current file, delete after writing successfully
 set nobackup
 set writebackup
 

@@ -4,3 +4,26 @@ set lines=100 columns=120
 if has('win32')
     au GUIEnter * simalt ~x
 endif
+
+" Tab label
+function GuiTabLabel()
+    let label = ''
+    let bufnrlist = tabpagebuflist(v:lnum)
+
+    " Add '+' if one of the buffers in the tab page is modified
+    for bufnr in bufnrlist
+    if getbufvar(bufnr, "&modified")
+        let label = '+'
+        break
+    endif
+    endfor
+
+    " Append the tab number
+    let label ..= v:lnum
+
+    " Append the buffer name
+    let label ..= ' '.bufname(bufnrlist[tabpagewinnr(v:lnum) - 1])
+
+    return label
+endfunction
+set guitablabel=%{GuiTabLabel()}
