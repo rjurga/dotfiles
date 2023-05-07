@@ -1,0 +1,12 @@
+[core]
+	editor = neovide --nofork
+	autocrlf = true
+[user]
+	name = Radek Jurga
+	email = radoslaw.jurga@gmail.com
+[init]
+	defaultBranch = master
+[pull]
+	rebase = true
+[rebase]
+	autoStash = true
