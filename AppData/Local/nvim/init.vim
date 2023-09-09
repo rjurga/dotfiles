@@ -159,20 +159,15 @@ vim.api.nvim_create_autocmd('LspAttach', {
         -- Buffer local mappings.
         -- See `:help vim.lsp.*` for documentation on any of the below functions
         local bufopts = { noremap = true, silent = true, buffer = ev.buf }
-        vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
-        vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
         vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
-        vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
         vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
         vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, bufopts)
         vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
         vim.keymap.set('n', '<space>wl', function()
             print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
         end, bufopts)
-        vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, bufopts)
         vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, bufopts)
         vim.keymap.set({ 'n', 'v' }, '<space>ca', vim.lsp.buf.code_action, bufopts)
-        vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
         vim.keymap.set('n', '<space>f', function()
             vim.lsp.buf.format { async = true }
         end, bufopts)
@@ -204,11 +199,12 @@ vim.keymap.set('n', '<leader>ff', builtin.find_files, opts)
 vim.keymap.set('n', '<leader>fg', builtin.live_grep, opts)
 vim.keymap.set('n', '<leader>fb', builtin.buffers, opts)
 vim.keymap.set('n', '<leader>fh', builtin.help_tags, opts)
-vim.keymap.set('n', '<leader>fs', builtin.lsp_workspace_symbols, opts)
-vim.keymap.set('n', '<leader>fd', builtin.lsp_definitions, opts)
-vim.keymap.set('n', '<leader>fi', builtin.lsp_implementations, opts)
-vim.keymap.set('n', '<leader><space>D', builtin.lsp_type_definitions, opts)
 vim.keymap.set('n', '<leader>fr', builtin.lsp_references, opts)
+vim.keymap.set('n', '<leader>fs', builtin.lsp_workspace_symbols, opts)
+vim.keymap.set('n', '<leader>fS', builtin.lsp_dynamic_workspace_symbols, opts)
+vim.keymap.set('n', 'gd', builtin.lsp_definitions, opts)
+vim.keymap.set('n', 'gi', builtin.lsp_implementations, opts)
+vim.keymap.set('n', 'gt', builtin.lsp_type_definitions, opts)
 
 --
 -- lualine
