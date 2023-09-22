@@ -57,6 +57,9 @@ nnoremap k gk
 " Keep cursor away from vertical edges
 set scrolloff=6
 
+" Resize splits when resizing vim
+autocmd VimResized * wincmd =
+
 " C/C++
 set cinoptions=l1,g0,E-s,t0,(0,W1s
 
