@@ -1,7 +1,9 @@
-vim.o.colorcolumn  = '119'       -- Columns to highlight.
+vim.o.colorcolumn  = '160'       -- Columns to highlight.
 vim.o.cursorline   = true        -- Highlight the screen line of the cursor.
 vim.o.guifont      = 'Hack:h13'  -- GUI: Names of fonts to be used.
 vim.o.list         = true        -- Show <Tab> and <EOL>.
+vim.opt.listchars:remove('tab')
+vim.opt.listchars:append({tab = "  "})
 vim.o.number       = true        -- Print the line number in front of each line.
 vim.o.scrolloff    = 6           -- Minimum number of lines above and below cursor.
 vim.o.showmode     = false       -- Message on status line to show current mode.
@@ -13,7 +15,7 @@ vim.o.swapfile     = false       -- Whether to use a swapfile for a buffer.
 -- Tabs
 --
 
-vim.o.expandtab  = true  -- Use spaces when <Tab> is inserted.
+vim.o.expandtab  = false  -- Use spaces when <Tab> is inserted.
 vim.o.shiftwidth = 4     -- Number of spaces to use for (auto)indent step.
 vim.o.tabstop    = 4     -- Number of columns between two tab stops.
 
@@ -126,7 +128,14 @@ local function build_visual_studio_solution()
     }):wait()
     if result.code == 0 then
         local solution_file = vim.fn.trim(result.stdout)
-        vim.cmd('make ' .. vim.fn.fnameescape(solution_file))
+        local solution_name = vim.fn.fnamemodify(solution_file, ':t')
+        if solution_name == 'Artemis.sln' then
+            vim.cmd('make ' .. vim.fn.fnameescape(solution_file) .. ' /p:Configuration="Release Editor"')
+        elseif solution_name == 'Artemis-ToolsProd.sln' then
+            vim.cmd('make ' .. vim.fn.fnameescape(solution_file) .. ' /p:Configuration="Debug Editor"')
+        else
+            vim.cmd('make ' .. vim.fn.fnameescape(solution_file))
+        end
     else
         vim.notify('Visual Studio is not running', vim.log.levels.ERROR)
     end
@@ -358,4 +367,30 @@ end
 
 if vim.fn.glob('*.raddbg_project') ~= '' then
     configure_raddbg()
+end
+
+--
+-- Perforce
+--
+
+-- Disable editorconfig because it causes removal of trailing spaces on save
+vim.g.editorconfig = false
+
+local function perforce_checkout()
+    vim.system({"p4", "edit", vim.fn.expand("%:p")}):wait()
+    vim.bo.readonly = false
+end
+
+vim.api.nvim_create_user_command("Checkout", perforce_checkout, {})
+
+vim.api.nvim_create_autocmd("FileChangedRO", {
+    callback = perforce_checkout,
+    group = vim.api.nvim_create_augroup('perforce-checkout', {clear = true}),
+})
+
+local cwd = vim.fn.getcwd()
+if cwd == [[V:\rjurga_main\VoidEngine\Code]] then
+    vim.system({"p4", "set", "P4CLIENT=rjurga_main"})
+elseif cwd == [[V:\rjurga_secondary\VoidEngine\Code]] then
+    vim.system({"p4", "set", "P4CLIENT=rjurga_secondary"})
 end
