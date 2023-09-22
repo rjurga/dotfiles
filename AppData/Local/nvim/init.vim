@@ -37,6 +37,9 @@ set noswapfile
 " Highlight line of the cursor
 set cursorline
 
+" Color max line length column
+set colorcolumn=160
+
 " Line numbers
 set number
 set relativenumber
@@ -45,10 +48,12 @@ set signcolumn=number
 " Indentation
 set tabstop=4
 set shiftwidth=4
-set expandtab
+set noexpandtab
 
 " Show tabs and trailing blanks
 set list
+set listchars-=tab:>\ 
+set listchars+=tab:\ \ 
 
 " Disable auto-continuation of comments
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
@@ -111,6 +116,17 @@ elseif has('win32')
         compiler! msbuild
     endif
 endif
+
+" Disable editorconfig because it causes removal of trailing spaces on save
+let g:editorconfig = v:false
+
+" Perforce
+function PerforceCheckout()
+    call system('p4 edit '..shellescape(expand('%:p')))
+    set noreadonly
+endfunction
+command Checkout :call PerforceCheckout()
+autocmd FileChangedRO * call PerforceCheckout()
 
 lua << LUAEOF
 
