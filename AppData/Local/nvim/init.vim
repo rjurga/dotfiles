@@ -175,6 +175,9 @@ vim.api.nvim_create_autocmd('LspAttach', {
         vim.keymap.set('n', '<space>f', function()
             vim.lsp.buf.format { async = true }
         end, bufopts)
+
+        -- clangd
+        vim.keymap.set('n', 'go', vim.cmd.ClangdSwitchSourceHeader, bufopts)
     end,
 })
 
