@@ -191,6 +191,8 @@ require('telescope').setup {
             "%.dll",
             "%.exe",
             "%.pdb",
+            "%.sln",
+            "%.vcxproj",
             "Session.vim",
         }
     }
