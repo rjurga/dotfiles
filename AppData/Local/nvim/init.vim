@@ -61,6 +61,7 @@ set scrolloff=6
 autocmd VimResized * wincmd =
 
 " C/C++
+let g:filetype_inc='c'
 set cinoptions=l1,g0,E-s,t0,(0,W1s
 
 " Ignored when completing file or directory names
