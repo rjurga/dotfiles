@@ -7,6 +7,9 @@ nnoremap <C-z> <Nop>
 " Delete the word before the cursor
 inoremap <C-BS> <C-W>
 
+" Build
+nnoremap <F7> :make<CR>
+
 " Quickfix
 nnoremap <F8> :cnext<CR>
 nnoremap <S-F8> :cprevious<CR>
