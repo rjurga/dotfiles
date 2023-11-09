@@ -206,6 +206,14 @@ require('telescope').setup {
 }
 require('telescope').load_extension('fzf')
 
+-- Wrap lines in previewer
+vim.api.nvim_create_autocmd("User", {
+    pattern = "TelescopePreviewerLoaded",
+    callback = function(args)
+        vim.wo.wrap = true
+    end,
+})
+
 local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<leader>ff', builtin.find_files, opts)
 vim.keymap.set('n', '<leader>fg', builtin.live_grep, opts)
