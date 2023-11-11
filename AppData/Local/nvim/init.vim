@@ -190,6 +190,10 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
 require('telescope').setup {
     defaults = {
+        cache_picker = {
+            num_pickers = 32,
+            limit_entries = 1024
+        },
         file_ignore_patterns = {
             "%.o",
             "%.obj",
@@ -230,6 +234,8 @@ vim.keymap.set('n', '<leader>fS', builtin.lsp_dynamic_workspace_symbols, opts)
 vim.keymap.set('n', 'gi', builtin.lsp_implementations, opts)
 vim.keymap.set('n', 'gd', builtin.lsp_definitions, opts)
 vim.keymap.set('n', 'gD', builtin.lsp_type_definitions, opts)
+vim.keymap.set('n', '<leader>F', builtin.resume, opts)
+vim.keymap.set('n', '<leader>f<tab>', builtin.pickers, opts)
 
 --
 -- lualine
