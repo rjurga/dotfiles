@@ -101,6 +101,15 @@ call plug#end()
 colorscheme zenburn
 hi VertSplit guifg=#303030 guibg=#303030 ctermfg=236 ctermbg=65
 
+" Compilers
+if filereadable('./first.jai') || filereadable('./build.jai')
+    compiler! jai
+elseif has('win32')
+    if !empty(glob('*.sln')) || !empty(glob('*.vcxproj'))
+        compiler! msbuild
+    endif
+endif
+
 lua << LUAEOF
 
 -- Options for keymaps
@@ -251,12 +260,3 @@ require('lualine').setup {
 }
 
 LUAEOF
-
-" Compilers
-if filereadable('./first.jai') || filereadable('./build.jai')
-    compiler! jai
-elseif has('win32')
-    if !empty(glob('*.sln')) || !empty(glob('*.vcxproj'))
-        compiler! msbuild
-    endif
-endif
