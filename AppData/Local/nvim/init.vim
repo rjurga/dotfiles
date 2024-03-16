@@ -105,7 +105,9 @@ hi VertSplit guifg=#303030 guibg=#303030 ctermfg=236 ctermbg=65
 if filereadable('./first.jai') || filereadable('./build.jai')
     compiler! jai
 elseif has('win32')
-    if !empty(glob('*.sln')) || !empty(glob('*.vcxproj'))
+    if filereadable('./build.bat')
+        set makeprg=build.bat
+    elseif !empty(glob('*.sln')) || !empty(glob('*.vcxproj'))
         compiler! msbuild
     endif
 endif
@@ -204,12 +206,12 @@ require('telescope').setup {
             limit_entries = 1024
         },
         file_ignore_patterns = {
-            "%.o",
-            "%.obj",
             "%.a",
-            "%.lib",
             "%.dll",
             "%.exe",
+            "%.lib",
+            "%.o",
+            "%.obj",
             "%.pdb",
             "%.sln",
             "%.vcxproj",
