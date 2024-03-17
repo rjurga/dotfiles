@@ -213,6 +213,7 @@ require('telescope').setup {
             "%.o",
             "%.obj",
             "%.pdb",
+            "%.raddbg",
             "%.sln",
             "%.vcxproj",
             "Session.vim",
