@@ -147,7 +147,7 @@ require'nvim-treesitter.configs'.setup {
 
     -- Indentation based on treesitter for the = operator
     indent = {
-        enable = true,
+        enable = false,
     },
 }
 
