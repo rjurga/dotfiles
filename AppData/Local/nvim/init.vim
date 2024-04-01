@@ -158,6 +158,9 @@ require'nvim-treesitter.configs'.setup {
 -- LSP
 --
 
+-- Disable virtual text in diagnostics
+vim.diagnostic.config({ virtual_text = false })
+
 -- Setup language servers.
 local lspconfig = require('lspconfig')
 lspconfig.clangd.setup {}
