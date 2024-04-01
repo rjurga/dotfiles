@@ -199,24 +199,37 @@ vim.api.nvim_create_autocmd('LspAttach', {
 -- Telescope
 --
 
+local file_ignore_patterns_common = {
+    "%.a",
+    "%.dll",
+    "%.exe",
+    "%.lib",
+    "%.o",
+    "%.obj",
+    "%.pdb",
+    "%.raddbg",
+    "%.sln",
+    "%.vcxproj",
+    "Session.vim",
+}
+
+local file_ignore_patterns_defaults = {
+    "third-party/*"
+}
+
+vim.list_extend(file_ignore_patterns_defaults, file_ignore_patterns_common)
+
 require('telescope').setup {
     defaults = {
         cache_picker = {
-            num_pickers = 32,
-            limit_entries = 1024
+            num_pickers = 64,
+            limit_entries = 8192
         },
-        file_ignore_patterns = {
-            "%.a",
-            "%.dll",
-            "%.exe",
-            "%.lib",
-            "%.o",
-            "%.obj",
-            "%.pdb",
-            "%.raddbg",
-            "%.sln",
-            "%.vcxproj",
-            "Session.vim",
+        file_ignore_patterns = file_ignore_patterns_defaults
+    },
+    pickers = {
+        find_files = {
+            file_ignore_patterns = file_ignore_patterns_common
         }
     }
 }
