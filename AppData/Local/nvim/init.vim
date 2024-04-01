@@ -73,6 +73,9 @@ set wildignore=*.o,*.obj,*.a,*.lib,*.dll,*.exe,*.pdb
 " Using lualine to show mode
 set noshowmode
 
+" Disable preview window for insert mode completion
+set completeopt-=preview
+
 "
 " Misc
 "
