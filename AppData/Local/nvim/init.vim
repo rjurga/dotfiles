@@ -84,10 +84,6 @@ if exists("g:neovide")
     let g:neovide_remember_window_size=v:false
 endif
 
-if executable("rg")
-    set grepprg=rg\ --vimgrep
-endif
-
 " Plugins
 call plug#begin(stdpath('data') . '/plugged')
 Plug 'jnurmine/Zenburn'
@@ -165,13 +161,6 @@ vim.diagnostic.config({ virtual_text = false })
 local lspconfig = require('lspconfig')
 lspconfig.clangd.setup {}
 
--- Global mappings.
--- See `:help vim.diagnostic.*` for documentation on any of the below functions
-vim.keymap.set('n', '<space>e', vim.diagnostic.open_float, opts)
-vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
-vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
-vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist, opts)
-
 -- Use LspAttach autocommand to only map the following keys
 -- after the language server attaches to the current buffer
 vim.api.nvim_create_autocmd('LspAttach', {
@@ -183,7 +172,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
         -- Buffer local mappings.
         -- See `:help vim.lsp.*` for documentation on any of the below functions
         local bufopts = { noremap = true, silent = true, buffer = ev.buf }
-        vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
         vim.keymap.set({ 'i', 'n' }, '<C-k>', vim.lsp.buf.signature_help, bufopts)
         vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, bufopts)
         vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
