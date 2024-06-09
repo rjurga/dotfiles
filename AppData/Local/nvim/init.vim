@@ -193,7 +193,8 @@ vim.api.nvim_create_autocmd('LspAttach', {
 -- Telescope
 --
 
-local file_ignore_patterns_common = {
+local file_ignore_patterns_defaults = {
+    "^build\\",
     "%.a",
     "%.dll",
     "%.exe",
@@ -201,17 +202,20 @@ local file_ignore_patterns_common = {
     "%.o",
     "%.obj",
     "%.pdb",
+    "%.png",
     "%.raddbg",
+    "%.rdi",
     "%.sln",
+    "%.ttf",
     "%.vcxproj",
     "Session.vim",
 }
 
-local file_ignore_patterns_defaults = {
-    "third-party/*"
+local file_ignore_patterns_third_party = {
+    "^src\\third_party"
 }
 
-vim.list_extend(file_ignore_patterns_defaults, file_ignore_patterns_common)
+vim.list_extend(file_ignore_patterns_third_party, file_ignore_patterns_defaults)
 
 require('telescope').setup {
     defaults = {
@@ -223,7 +227,13 @@ require('telescope').setup {
     },
     pickers = {
         find_files = {
-            file_ignore_patterns = file_ignore_patterns_common
+            file_ignore_patterns = file_ignore_patterns_third_party
+        },
+        grep_string = {
+            file_ignore_patterns = file_ignore_patterns_third_party
+        },
+        live_grep = {
+            file_ignore_patterns = file_ignore_patterns_third_party
         }
     }
 }
