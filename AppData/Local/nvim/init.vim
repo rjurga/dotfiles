@@ -76,6 +76,9 @@ set noshowmode
 " Disable preview window for insert mode completion
 set completeopt-=preview
 
+" Disable vertical separator
+set fillchars=vert:\ 
+
 "
 " Misc
 "
