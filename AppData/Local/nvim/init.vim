@@ -220,13 +220,20 @@ local file_ignore_patterns_third_party = {
 
 vim.list_extend(file_ignore_patterns_third_party, file_ignore_patterns_defaults)
 
+-- If on Windows, add crlf flag to ripgrep
+local custom_vimgrep_arguments = { unpack(require("telescope.config").values.vimgrep_arguments) }
+if vim.fn.has('win32') then
+    table.insert(custom_vimgrep_arguments, "--crlf")
+end
+
 require('telescope').setup {
     defaults = {
         cache_picker = {
             num_pickers = 64,
             limit_entries = 8192
         },
-        file_ignore_patterns = file_ignore_patterns_defaults
+        file_ignore_patterns = file_ignore_patterns_defaults,
+        vimgrep_arguments = custom_vimgrep_arguments
     },
     pickers = {
         find_files = {
