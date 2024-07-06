@@ -1,6 +1,10 @@
 " Font
 set guifont=Hack:h12
 
+" Display current directory as window title
+set title
+set titlestring=%{getcwd()}\ -\ NVIM
+
 " Disable shortcut to suspend nvim
 nnoremap <C-z> <Nop>
 
