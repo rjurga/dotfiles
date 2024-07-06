@@ -37,6 +37,9 @@ set noswapfile
 " Highlight line of the cursor
 set cursorline
 
+" Highlight column for max line length
+set colorcolumn=129
+
 " Line numbers
 set number
 set relativenumber
