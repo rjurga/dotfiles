@@ -93,9 +93,6 @@ set noshowmode
 " Disable preview window for insert mode completion
 set completeopt-=preview
 
-" Disable vertical separator
-set fillchars=vert:\ 
-
 "
 " Misc
 "
@@ -118,7 +115,6 @@ call plug#end()
 
 " Color scheme
 colorscheme zenburn
-hi VertSplit guifg=#303030 guibg=#303030 ctermfg=236 ctermbg=65
 
 " Compilers
 if filereadable('./first.jai') || filereadable('./build.jai')
