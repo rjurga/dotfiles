@@ -222,6 +222,7 @@ local file_ignore_patterns_defaults = {
     "%.raddbg",
     "%.rdi",
     "%.sln",
+    "%.svg",
     "%.ttf",
     "%.vcxproj",
     "Session.vim",
