@@ -18,11 +18,7 @@ nnoremap <F7> :make<CR>
 nnoremap <F5> :call system('raddbg --ipc run')<CR>
 
 " Run to cursor
-function RunToCursorInRaddbg()
-    call system('raddbg --ipc find_code_location ' .. shellescape(expand('%:p') .. ':' .. line('.')))
-    call system('raddbg --ipc run_to_cursor')
-endfunction
-nnoremap <C-F10> :call RunToCursorInRaddbg()<CR>
+nnoremap <C-F10> :call system('raddbg --ipc run_to_line ' .. shellescape(expand('%:p') .. ':' .. line('.')))<CR>
 
 " Quickfix
 nnoremap <F8> :cnext<CR>
