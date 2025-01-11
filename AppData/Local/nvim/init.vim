@@ -137,7 +137,20 @@ require 'nvim-treesitter.install'.prefer_git = false
 
 require'nvim-treesitter.configs'.setup {
     -- A list of parser names, or "all" (the five first listed parsers should always be installed)
-    ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "cpp", "hlsl", "json", "python", "toml", "yaml" },
+    ensure_installed = {
+        "c",
+        "lua",
+        "vim",
+        "vimdoc",
+        "query",
+        "cpp",
+        "hlsl",
+        "slang",
+        "json",
+        "python",
+        "toml",
+        "yaml",
+    },
 
     -- Install parsers synchronously (only applied to `ensure_installed`)
     sync_install = false,
@@ -172,6 +185,7 @@ vim.diagnostic.config({ virtual_text = false })
 -- Setup language servers.
 local lspconfig = require('lspconfig')
 lspconfig.clangd.setup {}
+lspconfig.slangd.setup {}
 
 -- Use LspAttach autocommand to only map the following keys
 -- after the language server attaches to the current buffer
