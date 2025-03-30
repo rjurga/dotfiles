@@ -20,10 +20,6 @@ nnoremap <F5> :call system('raddbg --ipc run')<CR>
 " Run to cursor
 nnoremap <C-F10> :call system('raddbg --ipc run_to_line ' .. shellescape(expand('%:p') .. ':' .. line('.')))<CR>
 
-" Quickfix
-nnoremap <F8> :cnext<CR>
-nnoremap <S-F8> :cprevious<CR>
-
 " Terminal
 tnoremap <Esc> <C-\><C-n>
 
@@ -191,24 +187,10 @@ lspconfig.slangd.setup {}
 -- after the language server attaches to the current buffer
 vim.api.nvim_create_autocmd('LspAttach', {
     group = vim.api.nvim_create_augroup('UserLspConfig', {}),
-    callback = function(ev)
-        -- Enable completion triggered by <c-x><c-o>
-        vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
-
+    callback = function(args)
         -- Buffer local mappings.
         -- See `:help vim.lsp.*` for documentation on any of the below functions
-        local bufopts = { noremap = true, silent = true, buffer = ev.buf }
-        vim.keymap.set({ 'i', 'n' }, '<C-k>', vim.lsp.buf.signature_help, bufopts)
-        vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, bufopts)
-        vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
-        vim.keymap.set('n', '<space>wl', function()
-            print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-        end, bufopts)
-        vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, bufopts)
-        vim.keymap.set({ 'n', 'v' }, '<space>ca', vim.lsp.buf.code_action, bufopts)
-        vim.keymap.set('n', '<space>f', function()
-            vim.lsp.buf.format { async = true }
-        end, bufopts)
+        local bufopts = { noremap = true, silent = true, buffer = args.buf }
 
         -- clangd
         vim.keymap.set('n', 'go', vim.cmd.ClangdSwitchSourceHeader, bufopts)
@@ -285,7 +267,6 @@ local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<leader>ff', builtin.find_files, opts)
 vim.keymap.set('n', '<leader>fg', builtin.live_grep, opts)
 vim.keymap.set('n', '<leader>f*', builtin.grep_string, opts)
-vim.keymap.set('n', '<leader>fb', builtin.buffers, opts)
 vim.keymap.set('n', '<leader>fh', builtin.help_tags, opts)
 vim.keymap.set('n', '<leader>fr', builtin.lsp_references, opts)
 vim.keymap.set('n', '<leader>fs', builtin.lsp_dynamic_workspace_symbols, opts)
