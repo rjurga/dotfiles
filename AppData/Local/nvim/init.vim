@@ -99,7 +99,7 @@ Plug 'jnurmine/Zenburn'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-lua/plenary.nvim' " Required for nvim-telescope
-Plug 'nvim-telescope/telescope.nvim', { 'branch': '0.1.x' }
+Plug 'nvim-telescope/telescope.nvim', { 'branch': 'master' }
 Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build' }
 Plug 'nvim-lualine/lualine.nvim'
 Plug 'rluba/jai.vim'
@@ -132,19 +132,21 @@ local opts = { noremap = true, silent = true }
 require 'nvim-treesitter.install'.prefer_git = false
 
 require'nvim-treesitter.configs'.setup {
-    -- A list of parser names, or "all" (the five first listed parsers should always be installed)
+    -- A list of parser names, or "all" (the listed parsers MUST always be installed)
     ensure_installed = {
         "c",
-        "lua",
-        "vim",
-        "vimdoc",
-        "query",
         "cpp",
         "hlsl",
-        "slang",
         "json",
+        "lua",
+        "markdown",
+        "markdown_inline",
         "python",
+        "query",
+        "slang",
         "toml",
+        "vim",
+        "vimdoc",
         "yaml",
     },
 
@@ -174,9 +176,6 @@ require'nvim-treesitter.configs'.setup {
 --
 -- LSP
 --
-
--- Disable virtual text in diagnostics
-vim.diagnostic.config({ virtual_text = false })
 
 -- Setup language servers.
 local lspconfig = require('lspconfig')
@@ -264,15 +263,13 @@ vim.api.nvim_create_autocmd("User", {
 })
 
 local builtin = require('telescope.builtin')
+vim.keymap.set('n', 'grr', builtin.lsp_references, opts)
+vim.keymap.set('n', 'gri', builtin.lsp_implementations, opts)
 vim.keymap.set('n', '<leader>ff', builtin.find_files, opts)
 vim.keymap.set('n', '<leader>fg', builtin.live_grep, opts)
 vim.keymap.set('n', '<leader>f*', builtin.grep_string, opts)
 vim.keymap.set('n', '<leader>fh', builtin.help_tags, opts)
-vim.keymap.set('n', '<leader>fr', builtin.lsp_references, opts)
 vim.keymap.set('n', '<leader>fs', builtin.lsp_dynamic_workspace_symbols, opts)
-vim.keymap.set('n', 'gi', builtin.lsp_implementations, opts)
-vim.keymap.set('n', 'gd', builtin.lsp_definitions, opts)
-vim.keymap.set('n', 'gD', builtin.lsp_type_definitions, opts)
 vim.keymap.set('n', '<leader>F', builtin.resume, opts)
 vim.keymap.set('n', '<leader>f<tab>', builtin.pickers, opts)
 
