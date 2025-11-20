@@ -3,7 +3,7 @@
 	autocrlf = true
 [user]
 	name = Radek Jurga
-	email = radoslaw.jurga@gmail.com
+	email = rdkjrg@gmail.com
 [init]
 	defaultBranch = master
 [pull]
