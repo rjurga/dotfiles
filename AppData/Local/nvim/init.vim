@@ -100,7 +100,7 @@ Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-lua/plenary.nvim' " Required for nvim-telescope
 Plug 'nvim-telescope/telescope.nvim', { 'branch': 'master' }
-Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build' }
+Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release --target install' }
 Plug 'nvim-lualine/lualine.nvim'
 Plug 'rluba/jai.vim'
 call plug#end()
@@ -131,19 +131,15 @@ local opts = { noremap = true, silent = true }
 -- Switch the default install method to curl
 require 'nvim-treesitter.install'.prefer_git = false
 
-require'nvim-treesitter.configs'.setup {
+require 'nvim-treesitter.configs'.setup {
     -- A list of parser names, or "all" (the listed parsers MUST always be installed)
     ensure_installed = {
         "c",
         "cpp",
         "hlsl",
         "json",
-        "lua",
-        "markdown",
-        "markdown_inline",
         "python",
         "query",
-        "slang",
         "toml",
         "vim",
         "vimdoc",
@@ -179,8 +175,8 @@ require'nvim-treesitter.configs'.setup {
 
 -- Setup language servers.
 local lspconfig = require('lspconfig')
-lspconfig.clangd.setup {}
-lspconfig.slangd.setup {}
+vim.lsp.enable('clangd')
+vim.lsp.enable('slangd')
 
 -- Use LspAttach autocommand to only map the following keys
 -- after the language server attaches to the current buffer
@@ -263,8 +259,6 @@ vim.api.nvim_create_autocmd("User", {
 })
 
 local builtin = require('telescope.builtin')
-vim.keymap.set('n', 'grr', builtin.lsp_references, opts)
-vim.keymap.set('n', 'gri', builtin.lsp_implementations, opts)
 vim.keymap.set('n', '<leader>ff', builtin.find_files, opts)
 vim.keymap.set('n', '<leader>fg', builtin.live_grep, opts)
 vim.keymap.set('n', '<leader>f*', builtin.grep_string, opts)
