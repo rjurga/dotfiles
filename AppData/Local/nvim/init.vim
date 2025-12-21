@@ -114,7 +114,11 @@ if filereadable('./first.jai') || filereadable('./build.jai')
 elseif has('win32')
     if filereadable('./build.bat')
         set makeprg=build.bat
-    elseif !empty(glob('*.sln')) || !empty(glob('*.vcxproj'))
+    elseif !empty(glob('../*.slnx')) && !empty(glob('*.vcxproj'))
+        compiler! msbuild
+        let s:solution_file = glob('../*.slnx')
+        execute "nnoremap <F7> :make " .. fnameescape(s:solution_file) .. "<CR>"
+    elseif !empty(glob('*.slnx')) || !empty(glob('*.sln')) || !empty(glob('*.vcxproj'))
         compiler! msbuild
     endif
 endif
@@ -134,6 +138,7 @@ require 'nvim-treesitter'.install {
     "cpp",
     "hlsl",
     "json",
+    "lua",
     "python",
     "query",
     "toml",
@@ -149,6 +154,7 @@ vim.api.nvim_create_autocmd('FileType', {
     "cpp",
     "hlsl",
     "json",
+    "lua",
     "python",
     "query",
     "toml",
@@ -189,8 +195,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
 -- Telescope
 --
 
-local file_ignore_patterns_defaults = {
-    "^build\\",
+local file_ignore_patterns = {
     "%.a",
     "%.dll",
     "%.exe",
@@ -205,14 +210,9 @@ local file_ignore_patterns_defaults = {
     "%.svg",
     "%.ttf",
     "%.vcxproj",
+    "compile_flags.txt",
     "Session.vim",
 }
-
-local file_ignore_patterns_third_party = {
-    "^src\\third_party"
-}
-
-vim.list_extend(file_ignore_patterns_third_party, file_ignore_patterns_defaults)
 
 -- If on Windows, add crlf flag to ripgrep
 local custom_vimgrep_arguments = { unpack(require("telescope.config").values.vimgrep_arguments) }
@@ -226,18 +226,18 @@ require('telescope').setup {
             num_pickers = 64,
             limit_entries = 8192
         },
-        file_ignore_patterns = file_ignore_patterns_defaults,
+        file_ignore_patterns = file_ignore_patterns,
         vimgrep_arguments = custom_vimgrep_arguments
     },
     pickers = {
         find_files = {
-            file_ignore_patterns = file_ignore_patterns_third_party
+            file_ignore_patterns = file_ignore_patterns
         },
         grep_string = {
-            file_ignore_patterns = file_ignore_patterns_third_party
+            file_ignore_patterns = file_ignore_patterns
         },
         live_grep = {
-            file_ignore_patterns = file_ignore_patterns_third_party
+            file_ignore_patterns = file_ignore_patterns
         }
     }
 }
