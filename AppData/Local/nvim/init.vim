@@ -349,8 +349,10 @@ vim.api.nvim_create_autocmd("User", {
 })
 
 local builtin = require('telescope.builtin')
-vim.keymap.set('n', 'grr', builtin.lsp_references, opts)
 vim.keymap.set('n', 'gri', builtin.lsp_implementations, opts)
+vim.keymap.set('n', 'grr', builtin.lsp_references, opts)
+vim.keymap.set('n', 'grt', builtin.lsp_type_definitions, opts)
+vim.keymap.set('n', 'gO', builtin.lsp_document_symbols, opts)
 vim.keymap.set('n', '<leader>ff', builtin.find_files, opts)
 vim.keymap.set('n', '<leader>fg', builtin.live_grep, opts)
 vim.keymap.set('n', '<leader>f*', builtin.grep_string, opts)
