@@ -100,7 +100,6 @@ Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-lua/plenary.nvim'  " Required for nvim-telescope
 Plug 'nvim-telescope/telescope.nvim', { 'branch': 'master' }
 Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release --target install' }
-Plug 'nvim-telescope/telescope-file-browser.nvim'
 Plug 'nvim-lualine/lualine.nvim'
 Plug 'rluba/jai.vim'
 
@@ -337,11 +336,6 @@ require('telescope').setup {
         live_grep = {
             file_ignore_patterns = file_ignore_patterns
         }
-    },
-    extensions = {
-        file_browser = {
-            auto_depth = true
-        }
     }
 }
 require('telescope').load_extension('fzf')
@@ -366,10 +360,6 @@ vim.keymap.set('n', '<leader>fh', builtin.help_tags, opts)
 vim.keymap.set('n', '<leader>fs', builtin.lsp_dynamic_workspace_symbols, opts)
 vim.keymap.set('n', '<leader>F', builtin.resume, opts)
 vim.keymap.set('n', '<leader>f<tab>', builtin.pickers, opts)
-
-vim.keymap.set('n', '<leader>fb', function()
-    require('telescope').extensions.file_browser.file_browser()
-end, opts)
 
 --
 -- lualine
