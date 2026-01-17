@@ -73,7 +73,7 @@ autocmd VimResized * wincmd =
 
 " C/C++
 let g:filetype_inc='c'
-set cinoptions==0,l1,g0,E-s,t0,(0,W1s
+set cinoptions==s,l1,g0,t0,(0,Ws
 
 " Ignored when completing file or directory names
 set wildignore=*.o,*.obj,*.a,*.lib,*.dll,*.exe,*.pdb
