@@ -15,10 +15,10 @@ inoremap <C-BS> <C-W>
 nnoremap <F7> :make<CR>
 
 " Run
-nnoremap <F5> :call system('raddbg --ipc run')<CR>
+nnoremap <F5> :call system('powershell -Command "$dte = [runtime.interopservices.marshal]::getactiveobject(''VisualStudio.DTE''); (New-Object -ComObject WScript.Shell).AppActivate((Get-Process devenv).Id); $dte.ExecuteCommand(''Debug.Start'')"')<CR>
 
 " Run to cursor
-nnoremap <C-F10> :call system('raddbg --ipc run_to_line ' .. shellescape(expand('%:p') .. ':' .. line('.')))<CR>
+nnoremap <C-F10> :call system('powershell -Command "$dte = [runtime.interopservices.marshal]::getactiveobject(''VisualStudio.DTE''); (New-Object -ComObject WScript.Shell).AppActivate((Get-Process devenv).Id); $dte.ItemOperations.OpenFile(''' .. shellescape(expand('%:p')) .. '''); $dte.ActiveDocument.Selection.GotoLine(' .. line('.') .. '); $dte.ExecuteCommand(''Debug.RunToCursor'')"')<CR>
 
 " Terminal
 tnoremap <Esc> <C-\><C-n>
@@ -94,6 +94,7 @@ endif
 
 " Plugins
 call plug#begin(stdpath('data') . '/plugged')
+
 Plug 'jnurmine/Zenburn'
 Plug 'nvim-treesitter/nvim-treesitter', { 'do': ':TSUpdate' }
 Plug 'neovim/nvim-lspconfig'
@@ -132,6 +133,11 @@ lua << LUAEOF
 
 -- Options for keymaps
 local opts = { noremap = true, silent = true }
+
+-- Paste with C-V in terminal
+vim.keymap.set('t', '<C-v>', function()
+    vim.api.nvim_paste(vim.fn.getreg(), true, -1)
+end, opts)
 
 --
 -- Treesitter
@@ -309,6 +315,7 @@ local file_ignore_patterns = {
     "%.ttf",
     "%.vcxproj",
     "Session.vim",
+    "third_party[/\\]",
 }
 
 -- If on Windows, add crlf flag to ripgrep
