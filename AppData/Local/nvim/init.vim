@@ -119,64 +119,7 @@ function! VisualStudioBuildSolution() abort
     execute "make " .. fnameescape(solution_file)
 endfunction
 
-function! VisualStudioSyncBreakpoints() abort
-    call sign_unplace('breakpoints')
-    let lines = systemlist('powershell -Command "try { $dte = [runtime.interopservices.marshal]::getactiveobject(''VisualStudio.DTE''); $file = ''' .. expand('%:p') .. '''; foreach ($bp in $dte.Debugger.Breakpoints) { if ($bp.File -eq $file) { Write-Output ($bp.FileLine.ToString() + '' '' + $bp.Enabled.ToString()) } } } catch {}"')
-    for entry in lines
-        let parts = split(entry)
-        if len(parts) >= 2
-            let lnum = str2nr(parts[0])
-            let sign_name = parts[1] ==# 'True' ? 'breakpoint' : 'breakpointDisabled'
-            call sign_place(0, 'breakpoints', sign_name, bufnr(), {'lnum': lnum})
-        endif
-    endfor
-endfunction
-
-function! VisualStudioToggleBreakpoint() abort
-    let output = trim(system('powershell -Command "try { $dte = [runtime.interopservices.marshal]::getactiveobject(''VisualStudio.DTE''); [void]$dte.ItemOperations.OpenFile(''' .. expand('%:p') .. '''); [void]$dte.ActiveDocument.Selection.GotoLine(' .. line('.') .. '); [void]$dte.ExecuteCommand(''Debug.ToggleBreakpoint''); Write-Output ''ok'' } catch {}"'))
-    if output !=# 'ok'
-        echohl ErrorMsg | echo "Visual Studio is not running" | echohl None
-        return
-    endif
-
-    let signs = sign_getplaced(bufnr(), {'group': 'breakpoints', 'lnum': line('.')})[0].signs
-    if empty(signs)
-        call sign_place(0, 'breakpoints', 'breakpoint', bufnr(), {'lnum': line('.')})
-    elseif signs[0].name ==# 'breakpoint'
-        call sign_unplace('breakpoints', {'buffer': bufnr(), 'id': signs[0].id})
-    else
-        call sign_unplace('breakpoints', {'buffer': bufnr(), 'id': signs[0].id})
-        call sign_place(0, 'breakpoints', 'breakpoint', bufnr(), {'lnum': line('.')})
-    endif
-endfunction
-
-function! VisualStudioEnableBreakpoint() abort
-    let output = trim(system('powershell -Command "try { $dte = [runtime.interopservices.marshal]::getactiveobject(''VisualStudio.DTE''); [void]$dte.ItemOperations.OpenFile(''' .. expand('%:p') .. '''); [void]$dte.ActiveDocument.Selection.GotoLine(' .. line('.') .. '); [void]$dte.ExecuteCommand(''Debug.EnableBreakpoint''); Write-Output ''ok'' } catch {}"'))
-    if output !=# 'ok'
-        echohl ErrorMsg | echo "Visual Studio is not running" | echohl None
-        return
-    endif
-    let signs = sign_getplaced(bufnr(), {'group': 'breakpoints', 'lnum': line('.')})[0].signs
-    if empty(signs)
-        return
-    endif
-    let id = signs[0].id
-    if signs[0].name ==# 'breakpoint'
-        let new_sign = 'breakpointDisabled'
-    else
-        let new_sign = 'breakpoint'
-    endif
-    call sign_unplace('breakpoints', {'buffer': bufnr(), 'id': id})
-    call sign_place(0, 'breakpoints', new_sign, bufnr(), {'lnum': line('.')})
-endfunction
-
 function! ConfigureVisualStudio()
-    hi default debugBreakpoint term=reverse ctermbg=red guibg=red
-    hi default debugBreakpointDisabled term=reverse ctermbg=gray guibg=gray
-
-    sign define breakpoint text=B texthl=debugBreakpoint
-    sign define breakpointDisabled text=B texthl=debugBreakpointDisabled
-
     " Build solution
     compiler! msbuild
     nnoremap <F7> :call VisualStudioBuildSolution()<CR>
@@ -184,17 +127,8 @@ function! ConfigureVisualStudio()
     " Start
     nnoremap <F5> :call system('powershell -Command "$dte = [runtime.interopservices.marshal]::getactiveobject(''VisualStudio.DTE''); (New-Object -ComObject WScript.Shell).AppActivate((Get-Process devenv)[0].Id); $dte.ExecuteCommand(''Debug.Start'')"')<CR>
 
-    " Sync breakpoints
-    nnoremap <C-L> :call VisualStudioSyncBreakpoints()<CR><Cmd>nohlsearch<Bar>diffupdate<Bar>normal! <C-L><CR>
-
-    " Toggle breakpoint
-    nnoremap <F9> :call VisualStudioToggleBreakpoint()<CR>
-
-    " Enable breakpoint
-    nnoremap <C-F9> :call VisualStudioEnableBreakpoint()<CR>
-
-    " Run to cursor
-    nnoremap <C-F10> :call system('powershell -Command "$dte = [runtime.interopservices.marshal]::getactiveobject(''VisualStudio.DTE''); (New-Object -ComObject WScript.Shell).AppActivate((Get-Process devenv)[0].Id); $dte.ItemOperations.OpenFile(''' .. expand('%:p') .. '''); $dte.ActiveDocument.Selection.GotoLine(' .. line('.') .. '); $dte.ExecuteCommand(''Debug.RunToCursor'')"')<CR>
+    " Go to current file
+    nnoremap gX :call system('powershell -Command "$dte = [runtime.interopservices.marshal]::getactiveobject(''VisualStudio.DTE''); (New-Object -ComObject WScript.Shell).AppActivate((Get-Process devenv)[0].Id); $dte.ItemOperations.OpenFile(''' .. expand('%:p') .. '''); $dte.ActiveDocument.Selection.GotoLine(' .. line('.') .. ');"')<CR>
 endfunction
 
 if filereadable('./first.jai') || filereadable('./build.jai')
