@@ -323,6 +323,7 @@ local file_ignore_patterns = {
     "%.raddbg",
     "%.rdi",
     "%.sln",
+    "%.slnx",
     "%.svg",
     "%.ttf",
     "%.vcxproj",
