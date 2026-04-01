@@ -1,24 +1,45 @@
--- Font
-vim.o.guifont = 'Hack:h12'
+--
+-- Display
+--
 
--- Display current directory as window title
+vim.o.guifont = 'Hack:h12'
 vim.o.title = true
 vim.o.titlestring = '%{getcwd()} - Nvim'
+vim.o.cursorline = true
+vim.o.colorcolumn = '129'
+vim.o.number = true
+vim.o.signcolumn = 'number'
+vim.o.showmode = false
+vim.o.list = true
 
--- Copy to the system clipboard
+--
+-- Editing
+--
+
 vim.o.clipboard = 'unnamedplus'
-
--- Disable shortcut to suspend nvim
-vim.keymap.set('n', '<C-z>', '<Nop>')
+vim.o.tabstop = 4
+vim.o.shiftwidth = 4
+vim.o.expandtab = true
+vim.o.scrolloff = 6
+vim.o.swapfile = false
 
 -- Delete the word before the cursor
 vim.keymap.set('i', '<C-BS>', '<C-W>')
 
--- Build
-vim.keymap.set('n', '<F7>', '<cmd>make<CR>')
+-- Disable auto-continuation of comments
+vim.api.nvim_create_autocmd("BufEnter", {
+    callback = function()
+        vim.opt_local.formatoptions:remove({ "c", "r", "o" })
+    end,
+})
 
--- Go to normal mode in terminal
-vim.keymap.set('t', '<Esc>', '<C-\\><C-n>')
+-- Move vertically without skipping wrapped lines
+vim.keymap.set('n', 'j', function() return vim.v.count == 0 and 'gj' or 'j' end, { expr = true })
+vim.keymap.set('n', 'k', function() return vim.v.count == 0 and 'gk' or 'k' end, { expr = true })
+
+--
+-- Navigation
+--
 
 -- Window navigation
 vim.keymap.set('t', '<A-h>', '<C-\\><C-N><C-w>h')
@@ -34,53 +55,89 @@ vim.keymap.set('n', '<A-j>', '<C-w>j')
 vim.keymap.set('n', '<A-k>', '<C-w>k')
 vim.keymap.set('n', '<A-l>', '<C-w>l')
 
--- Disable swapfile
-vim.o.swapfile = false
-
--- Highlight line of the cursor
-vim.o.cursorline = true
-
--- Highlight column for max line length
-vim.o.colorcolumn = '129'
-
--- Line numbers
-vim.o.number = true
-vim.o.signcolumn = 'number'
-
--- Indentation
-vim.o.tabstop = 4
-vim.o.shiftwidth = 4
-vim.o.expandtab = true
-
--- Show tabs and trailing blanks
-vim.o.list = true
-
--- Disable auto-continuation of comments
-vim.api.nvim_create_autocmd("FileType", {
-    pattern = "*",
-    callback = function()
-        vim.opt_local.formatoptions:remove({ "c", "r", "o" })
-    end,
-})
-
--- Move vertically without skipping wrapped lines
-vim.keymap.set('n', 'j', 'gj')
-vim.keymap.set('n', 'k', 'gk')
-
--- Keep cursor away from vertical edges
-vim.o.scrolloff = 6
-
 -- Resize splits when resizing vim
 vim.api.nvim_create_autocmd('VimResized', { command = 'wincmd =' })
 
+--
+-- Terminal
+--
+
+-- Go to normal mode in terminal
+vim.keymap.set('t', '<Esc>', '<C-\\><C-n>')
+
+-- Paste with C-V in terminal
+vim.keymap.set('t', '<C-v>', function()
+    vim.api.nvim_paste(vim.fn.getreg('+'), true, -1)
+end)
+
+--
+-- Misc keymaps
+--
+
+vim.keymap.set('n', '<C-z>', '<Nop>')
+
+--
 -- C/C++
+--
+
 vim.g.filetype_inc = 'cpp'
 vim.o.cinoptions = '=s,l1,g0,t0,(0,Ws'
 
--- Using lualine to show mode
-vim.o.showmode = false
+--
+-- Build system
+--
 
+vim.keymap.set('n', '<F7>', '<cmd>make<CR>')
+
+local function VisualStudioBuildSolution()
+    local solution_file = vim.fn.trim(vim.fn.system(
+        [[powershell -Command "try { [runtime.interopservices.marshal]::getactiveobject('VisualStudio.DTE').Solution.FullName } catch {}"]]
+    ))
+    if solution_file == '' then
+        vim.api.nvim_echo({{'Visual Studio is not running', 'ErrorMsg'}}, true, {})
+        return
+    end
+    vim.cmd('make ' .. vim.fn.fnameescape(solution_file))
+end
+
+local function ConfigureVisualStudio()
+    -- Build solution
+    vim.cmd('compiler! msbuild')
+    vim.keymap.set('n', '<F7>', VisualStudioBuildSolution)
+
+    -- Start
+    vim.keymap.set('n', '<F5>', function()
+        vim.system(
+            { 'powershell', '-Command', [[$dte = [runtime.interopservices.marshal]::getactiveobject('VisualStudio.DTE'); (New-Object -ComObject WScript.Shell).AppActivate((Get-Process devenv)[0].Id); $dte.ExecuteCommand('Debug.Start')]] }
+        )
+    end)
+
+    -- Go to current file
+    vim.keymap.set('n', 'gX', function()
+        local file = vim.fn.expand('%:p')
+        local lnum = tostring(vim.fn.line('.'))
+        vim.system(
+            { 'powershell', '-Command',
+                [[& { $dte = [runtime.interopservices.marshal]::getactiveobject('VisualStudio.DTE'); (New-Object -ComObject WScript.Shell).AppActivate((Get-Process devenv)[0].Id); $dte.ItemOperations.OpenFile($args[0]); $dte.ActiveDocument.Selection.GotoLine($args[1]) }]],
+                file, lnum }
+        )
+    end)
+end
+
+if vim.fn.filereadable('./first.jai') == 1 or vim.fn.filereadable('./build.jai') == 1 then
+    vim.cmd('compiler! jai')
+elseif vim.fn.has('win32') == 1 then
+    if vim.fn.filereadable('./build.bat') == 1 then
+        vim.o.makeprg = 'build.bat'
+    else
+        ConfigureVisualStudio()
+    end
+end
+
+--
 -- Neovide
+--
+
 if vim.g.neovide then
     vim.g.neovide_remember_window_size = false
 end
@@ -119,63 +176,10 @@ vim.pack.add({
 vim.cmd.colorscheme('zenburn')
 
 --
--- Visual Studio
---
-
-local function VisualStudioBuildSolution()
-    local solution_file = vim.fn.trim(vim.fn.system(
-        [[powershell -Command "try { [runtime.interopservices.marshal]::getactiveobject('VisualStudio.DTE').Solution.FullName } catch {}"]]
-    ))
-    if solution_file == '' then
-        vim.api.nvim_echo({{'Visual Studio is not running', 'ErrorMsg'}}, true, {})
-        return
-    end
-    vim.cmd('make ' .. vim.fn.fnameescape(solution_file))
-end
-
-local function ConfigureVisualStudio()
-    -- Build solution
-    vim.cmd('compiler! msbuild')
-    vim.keymap.set('n', '<F7>', VisualStudioBuildSolution)
-
-    -- Start
-    vim.keymap.set('n', '<F5>', function()
-        vim.fn.system(
-            [[powershell -Command "$dte = [runtime.interopservices.marshal]::getactiveobject('VisualStudio.DTE'); (New-Object -ComObject WScript.Shell).AppActivate((Get-Process devenv)[0].Id); $dte.ExecuteCommand('Debug.Start')"]]
-        )
-    end)
-
-    -- Go to current file
-    vim.keymap.set('n', 'gX', function()
-        local file = vim.fn.expand('%:p')
-        local lnum = vim.fn.line('.')
-        vim.fn.system(string.format(
-            [[powershell -Command "$dte = [runtime.interopservices.marshal]::getactiveobject('VisualStudio.DTE'); (New-Object -ComObject WScript.Shell).AppActivate((Get-Process devenv)[0].Id); $dte.ItemOperations.OpenFile('%s'); $dte.ActiveDocument.Selection.GotoLine(%d);"]],
-            file, lnum
-        ))
-    end)
-end
-
-if vim.fn.filereadable('./first.jai') == 1 or vim.fn.filereadable('./build.jai') == 1 then
-    vim.cmd('compiler! jai')
-elseif vim.fn.has('win32') == 1 then
-    if vim.fn.filereadable('./build.bat') == 1 then
-        vim.o.makeprg = 'build.bat'
-    else
-        ConfigureVisualStudio()
-    end
-end
-
--- Paste with C-V in terminal
-vim.keymap.set('t', '<C-v>', function()
-    vim.api.nvim_paste(vim.fn.getreg('+'), true, -1)
-end)
-
---
 -- Treesitter
 --
 
-require 'nvim-treesitter'.install {
+local ts_languages = {
     "c",
     "cmake",
     "cpp",
@@ -190,22 +194,11 @@ require 'nvim-treesitter'.install {
     "yaml",
 }
 
+require 'nvim-treesitter'.install(ts_languages)
+
 -- Syntax highlighting
 vim.api.nvim_create_autocmd('FileType', {
-    pattern = {
-        "c",
-        "cmake",
-        "cpp",
-        "hlsl",
-        "json",
-        "lua",
-        "python",
-        "query",
-        "toml",
-        "vim",
-        "vimdoc",
-        "yaml",
-    },
+    pattern = ts_languages,
     callback = function()
         vim.treesitter.start()
     end,
@@ -215,21 +208,16 @@ vim.api.nvim_create_autocmd('FileType', {
 -- LSP
 --
 
--- Setup language servers.
 vim.lsp.enable('clangd')
 vim.lsp.enable('slangd')
 
--- Use LspAttach autocommand to only map the following keys
--- after the language server attaches to the current buffer
 vim.api.nvim_create_autocmd('LspAttach', {
     group = vim.api.nvim_create_augroup('UserLspConfig', {}),
     callback = function(args)
-        -- Buffer local mappings.
-        -- See `:help vim.lsp.*` for documentation on any of the below functions
-        local bufopts = { buffer = args.buf }
-
-        -- clangd
-        vim.keymap.set('n', 'go', vim.cmd.LspClangdSwitchSourceHeader, bufopts)
+        local client = vim.lsp.get_client_by_id(args.data.client_id)
+        if client and client.name == 'clangd' then
+            vim.keymap.set('n', 'go', vim.cmd.LspClangdSwitchSourceHeader, { buffer = args.buf })
+        end
     end,
 })
 
@@ -258,9 +246,8 @@ local file_ignore_patterns = {
     "third_party[/\\]",
 }
 
--- If on Windows, add crlf flag to ripgrep
-local custom_vimgrep_arguments = { unpack(require("telescope.config").values.vimgrep_arguments) }
-if vim.fn.has('win32') then
+local custom_vimgrep_arguments = vim.list_extend({}, require("telescope.config").values.vimgrep_arguments)
+if vim.fn.has('win32') == 1 then
     table.insert(custom_vimgrep_arguments, "--crlf")
 end
 
@@ -272,17 +259,6 @@ require('telescope').setup {
         },
         file_ignore_patterns = file_ignore_patterns,
         vimgrep_arguments = custom_vimgrep_arguments
-    },
-    pickers = {
-        find_files = {
-            file_ignore_patterns = file_ignore_patterns
-        },
-        grep_string = {
-            file_ignore_patterns = file_ignore_patterns
-        },
-        live_grep = {
-            file_ignore_patterns = file_ignore_patterns
-        }
     }
 }
 
@@ -291,7 +267,7 @@ require('telescope').load_extension('fzf')
 -- Wrap lines in previewer
 vim.api.nvim_create_autocmd("User", {
     pattern = "TelescopePreviewerLoaded",
-    callback = function(args)
+    callback = function()
         vim.wo.wrap = true
     end,
 })
