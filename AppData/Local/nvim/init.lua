@@ -3,7 +3,7 @@ vim.o.cursorline   = true        -- Highlight the screen line of the cursor.
 vim.o.guifont      = 'Hack:h13'  -- GUI: Names of fonts to be used.
 vim.o.list         = true        -- Show <Tab> and <EOL>.
 vim.o.number       = true        -- Print the line number in front of each line.
-vim.o.scrolloff    = 12          -- Minimum number of lines above and below cursor.
+vim.o.scrolloff    = 6           -- Minimum number of lines above and below cursor.
 vim.o.showmode     = false       -- Message on status line to show current mode.
 vim.o.signcolumn   = 'number'    -- When and how to display the sign column.
 vim.o.smoothscroll = true        -- Scroll by screen lines when 'wrap' is set.
@@ -120,7 +120,7 @@ local function build_visual_studio_solution()
     end
 end
 
-local function debug_in_visual_studio()
+local function run_in_visual_studio()
     vim.system({'powershell', '-NoProfile', '-Command',
         [[$dte = [runtime.interopservices.marshal]::getactiveobject('VisualStudio.DTE'); (New-Object -ComObject WScript.Shell).AppActivate((Get-Process devenv)[0].Id); $dte.ExecuteCommand('Debug.Start')]]
     })
@@ -138,8 +138,34 @@ end
 local function configure_visual_studio()
     vim.cmd('compiler! msbuild')
     vim.keymap.set({'n', 'v', 'i'}, '<F7>', build_visual_studio_solution)
-    vim.keymap.set('n', '<F5>', debug_in_visual_studio)
+    vim.keymap.set('n', '<F5>', run_in_visual_studio)
     vim.keymap.set('n', 'gX', open_current_location_in_visual_studio)
+end
+
+--
+-- RAD Debugger
+--
+
+local function run_in_raddbg()
+    vim.system({'powershell', '-NoProfile', '-Command',
+        [[(New-Object -ComObject WScript.Shell).AppActivate((Get-Process raddbg)[0].Id)]]
+    }):wait()
+    -- vim.system({'raddbg.exe', '--ipc', 'bring_to_front'}):wait()
+    vim.system({'raddbg.exe', '--ipc', 'restart'})
+end
+
+local function open_current_location_in_raddbg()
+    local location = vim.fn.expand('%:p') .. ':' .. vim.fn.line('.') .. ':' .. vim.fn.col('.')
+    vim.system({'raddbg.exe', '--ipc', 'find_code_location', location})
+    vim.system({'powershell', '-NoProfile', '-Command',
+        [[(New-Object -ComObject WScript.Shell).AppActivate((Get-Process raddbg)[0].Id)]]
+    })
+    -- vim.system({'raddbg.exe', '--ipc', 'bring_to_front'})
+end
+
+local function configure_raddbg()
+    vim.keymap.set('n', '<F5>', run_in_raddbg)
+    vim.keymap.set('n', 'gX', open_current_location_in_raddbg)
 end
 
 --
@@ -167,6 +193,7 @@ vim.pack.add({
     'https://github.com/nvim-tree/nvim-web-devicons',
     'https://github.com/nvim-lualine/lualine.nvim',
     'https://github.com/ibhagwan/fzf-lua',
+    'https://github.com/rluba/jai.vim',
 })
 
 --
@@ -291,6 +318,7 @@ vim.keymap.set('n', '<Leader>F',  function() require("fzf-lua").resume() end)
 
 if vim.fn.filereadable('./first.jai') == 1 or vim.fn.filereadable('./build.jai') == 1 then
     vim.cmd('compiler! jai')
+    configure_raddbg()
 elseif vim.fn.has('win32') == 1 then
     configure_visual_studio()
 end
