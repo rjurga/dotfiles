@@ -7,7 +7,6 @@ vim.o.scrolloff    = 6           -- Minimum number of lines above and below curs
 vim.o.showmode     = false       -- Message on status line to show current mode.
 vim.o.signcolumn   = 'number'    -- When and how to display the sign column.
 vim.o.smoothscroll = true        -- Scroll by screen lines when 'wrap' is set.
-vim.o.splitright   = true        -- New window is put right of the current one.
 vim.o.swapfile     = false       -- Whether to use a swapfile for a buffer.
 
 --
@@ -102,6 +101,7 @@ vim.filetype.add({
 -- C/C++
 --
 
+vim.g.filetype_inc = 'cpp'
 vim.o.cinoptions = 'l1,g0,t0,(0,Ws'
 
 --
