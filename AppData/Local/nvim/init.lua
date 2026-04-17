@@ -50,6 +50,11 @@ vim.keymap.set({'n', 'v', 'i'}, '<F7>', '<Cmd>make<CR>')
 -- Return to normal mode from terminal.
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-N>')
 
+-- Paste in terminal.
+vim.keymap.set('t', '<C-R>', function()
+    return '<C-\\><C-N>"' .. vim.fn.nr2char(vim.fn.getchar()) .. 'pi'
+end, {expr = true})
+
 --
 -- Autocommands
 --
