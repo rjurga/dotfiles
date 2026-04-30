@@ -288,16 +288,21 @@ require('lualine').setup {
 --
 
 local fzf = require('fzf-lua')
-local rg_opts = fzf.defaults.grep.rg_opts
 
+local rg_opts = '--trim ' .. fzf.defaults.grep.rg_opts
 if vim.fn.has('win32') == 1 then
     rg_opts = '--crlf ' .. rg_opts
 end
 
 fzf.setup {
     winopts = {
+        height = 0.95,
+        width = 0.95,
+        row = 0.5,
+        col = 0.5,
         preview = {
             wrap = true,
+            horizontal = "right:50%",
         },
     },
     defaults = {
