@@ -205,6 +205,17 @@ vim.pack.add({
 -- LSP
 --
 
+vim.lsp.config('*', {
+    capabilities = {
+        textDocument = {
+            completion = {
+                completionItem = {
+                    snippetSupport = false
+                }
+            }
+        }
+    }
+})
 vim.lsp.enable({'clangd', 'slangd'})
 
 -- Clangd: switch between source and header.
