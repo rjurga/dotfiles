@@ -76,6 +76,13 @@ vim.api.nvim_create_autocmd('VimResized', {
 })
 
 -- Highlight when yanking text.
+-- @ToDo: In nvim 0.13, can do this to do both put and yank:
+-- vim.api.nvim_create_autocmd({'TextPutPost', 'TextYankPost'}, {
+--     callback = function()
+--         vim.hl.hl_op {higroup='Visual', timeout=300}
+--     end,
+--     group = vim.api.nvim_create_augroup('highlight-put-yank', {clear = true}),
+-- })
 vim.api.nvim_create_autocmd('TextYankPost', {
     callback = function()
         vim.hl.on_yank()
@@ -234,6 +241,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
 --
 
 require('nvim-treesitter').install {
+    'cmake',
     'cpp',
     'hlsl',
     'python'
@@ -337,9 +345,17 @@ vim.keymap.set('n', '<Leader>F',  function() require("fzf-lua").resume() end)
 -- Compiler
 --
 
-if vim.fn.filereadable('./first.jai') == 1 or vim.fn.filereadable('./build.jai') == 1 then
+if vim.fn.filereadable('./CMakeLists.txt') == 1 then
+    vim.cmd('compiler! msvc')
+    vim.opt.errorformat:prepend('%f(%l) : %t%*\\D%n: %m')  -- Fix for an errorformat parsing bug.
+    vim.o.makeprg = 'cmake --build --preset $* -- --quiet'
+    vim.keymap.set({'n', 'v', 'i'}, '<F7>', '<Cmd>make debug<CR>')
+elseif vim.fn.filereadable('./first.jai') == 1 or vim.fn.filereadable('./build.jai') == 1 then
     vim.cmd('compiler! jai')
-    configure_raddbg()
 elseif vim.fn.has('win32') == 1 then
     configure_visual_studio()
+end
+
+if vim.fn.glob('*.raddbg_project') ~= '' then
+    configure_raddbg()
 end
