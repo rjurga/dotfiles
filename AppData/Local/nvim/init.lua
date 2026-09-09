@@ -356,6 +356,7 @@ elseif vim.fn.has('win32') == 1 then
     configure_visual_studio()
 end
 
-if vim.fn.glob('*.raddbg_project') ~= '' then
+if vim.fn.glob('*.raddbg_project') ~= '' or
+    (vim.fn.fnamemodify(vim.fn.getcwd(), ':t') == 'src' and vim.fn.glob('../*.raddbg_project') ~= '') then
     configure_raddbg()
 end
